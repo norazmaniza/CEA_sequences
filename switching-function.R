@@ -79,7 +79,7 @@ sensitivity<-read.xlsx(
   fillMergedCells = FALSE
 )
 
-## Store the all permutation (simulation)
+## Store permutation (simulation)
 #number of simulation
 n_sim<-length(per[,1])
 for (i in 1:n_sim) {
@@ -188,7 +188,7 @@ for (run in 1:n_sim) {
   #remove transition from NR strN to next
   for (i in 1:n_str_sim)
   {
-    m_p[nloop[n_hs,i],nloop[n_hs,i]]<-0 # 
+    m_p[nloop[n_hs,i],nloop[n_hs,i]]<-0 
   }
   
   #get induction probability and enter at the NR row of each strategy
@@ -265,7 +265,6 @@ for (run in 1:n_sim) {
   # Run Markov model
   # Iterative solution of time-independent cSTM
   for (t in 1:n_cycles){  
-    
     m_M [t + 1, ] <- round(m_M [t, ] %*% a_m_p[,,t],7) #also consider third dimension (death with respect to cycle)
   }
   
@@ -326,7 +325,7 @@ for (run in 1:n_sim) {
   #set matrix cost to be same structure as matrix probability array
   a_m_c<-a_m_p
   
-  #loop for each strategy,store cost matrix
+  #loop for each strategy, store cost matrix
   for (i in 1:n_str_sim)
   {
     curr_str<-as.matrix(sim[i])
@@ -392,7 +391,7 @@ df_cea<-dampack::calculate_icers(cost       = v_tot_cost,
                                  strategies = v_names_Str)
 #print(" ICER table ")
 
-#create  result table
+#create result table
 df_cea_out=data.frame(Strategy= v_names_Str,Cost = v_tot_cost, Effect= v_tot_qaly,Inc_Cost=rep(0,n_sim),Inc_Effect=rep(0,n_sim), ICER = rep(0,n_sim), Status = rep(NA,n_sim),row.names = NULL)
 df_cea_out$ICER<-df_cea$ICER[order(match(df_cea$Strategy,df_cea_out$Strategy))]
 df_cea_out<-replace(df_cea_out,is.na(df_cea_out),0)
@@ -406,7 +405,7 @@ for (i in 2:length(v_names_Str)) {
   df_cea_ref[i,"ICER"]<-df_cea_ref[i,"Inc_Cost"] / df_cea_ref[i,"Inc_Effect"] 
 
 }
-#df_cea_ref<-df_cea_ref[order(df_cea_ref$Cost),] 
+
 
 return(df_cea_ref)
 
@@ -516,7 +515,7 @@ writeData(wb,"Baseline_ICER",base_result)
 saveWorkbook(wb, "DSA_tornado.xlsx", overwrite = TRUE)
 
 #end dsa tornado
-
+       
 #stop()
 
 #PSA ---------------------------
@@ -653,65 +652,4 @@ insertPlot(wb,"EL_plot",startCol = 1, width = 25, height = 25 ,units = "cm")
 saveWorkbook(wb, "PSA.xlsx", overwrite = TRUE)
 print("End of PSA analysis")
 
-
-
-
-
-
-
-
-
-
-stop()
-
-
-
-
-##TWO WAY NOT USED
-
-#TWO WAY DSA-------------------
-
-#set parameter
-my_twsa_params_range <- data.frame(pars = c("c_unit_drug_sec", "c_unit_drug_ust"), #set two parameter to vary
-                                   min = c(4493.76, 13118.78), # input min value for each
-                                   max = c(6740.64, 19678.16 )) #input max value for each
-
-#run two way
-l_twsa_det <- run_twsa_det(params_range = my_twsa_params_range,
-                           params_basecase = my_params_basecase,
-                           nsamp = 50,
-                           FUN = switching_sim,
-                           outcomes = c("Cost", "Effect", "ICER"),
-                           strategies = v_names_Str,
-                           progress = TRUE)
-#select dataset to plot
-my_twsa_ICER <- l_twsa_det$twsa_ICER
-
-# plot optimal strategy as a function of the two parameters varied in the two-way DSA
-plot(my_twsa_ICER)
-
-
-
-#not used
-twoway<-create_dsa_twoway(
-  my_twsa_params_range,
-  effectiveness = NULL,
-  v_names_Str,
-  cost = NULL,
-  currency = "$",
-  other_outcome = NULL
-)
-#not used
-twsa(
-  twoway,
-  param1 = "c_unit_drug_sec",
-  param2 = "p_R_sec",
-  ranges = NULL,
-  nsamp = 100,
-  outcome = "nmb",
-  wtp = 104337, #CET in USD, estimated to be 3 times GDP
-  strategies = NULL,
-  poly.order = 2
-)
-
-
+#End of code
